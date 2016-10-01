@@ -5,18 +5,25 @@
 public class Lexer {
 
     String input;      // Holds the input string
+    String lexeme;     // Holds the current lexeme
     int position;      // Holds the current index position of the analyzer
     Token token;       // Holds the current token
     Token nextToken;   // Holds the
-    static final String NAME_PATTERN = "(\\A[a-zA-z])(\\w*)";
-    static final String NUM_PATTERN = "(\\d*)";
+    LexemeClass lexemeClass;
+    
+    
 
+
+    static final String NAME_PATTERN = "(\\w*)";
+    static final String NUM_PATTERN = "(\\d*)";
+    static final String LETTER_PATTERN = "(\\A[a-zA-z])";
+    static final String WHITESPACE_PATTERN = "(\\s)";
 
 
     // Token Codes
     public enum Token {
 
-        UNVALID_TOKEN,
+        INVALID_TOKEN,
 
         // Grammar symbols
         RIGHT_PAREN,
@@ -37,96 +44,204 @@ public class Lexer {
         BOOL_LIT,
         TYPE
     }
+    
+    public enum LexemeClass {
+    	NAME,
+    	NUMBER,
+    	SPECIAL,
+    }
 
     public Lexer(String input) {
         this.input = input;
         position = 0;
     }
 
+    public void setNewInput(String newInput){
+        this.input = input;
+    }
+
     public Token lex(){
+    	// get the lexeme
+    	lexeme = "";
+    	getLexeme();
+    	
+    	switch (lexemeClass){
+    	case NAME:
+    		if (lexeme.equalsIgnoreCase("true") || lexeme.equalsIgnoreCase("false")){
+    				nextToken = Token.BOOL_LIT;
+    		}
+    		else if (lexeme.equalsIgnoreCase("for")){
+    			nextToken= Token.FOR_KEYWORD;
+    		}
+    		else {
+    			nextToken = Token.ID;
+    		}
+    		break;
+    	case NUMBER:
+    		nextToken = Token.VALUE;
+    		break;
+    	case SPECIAL:
+    		//System.out.println("error");
+    		nextToken = lookUpChar(lexeme);
+    		break;
+    	}
+    	System.out.printf("Lexeme is: %s, token is: %s, remaining length: %d\n", lexeme, nextToken.name(), (input.length() - position));
+    	//System.out.println(input.length() - position);
         return nextToken;
     }
 
-    public void lookUpChar(char c){
-        switch (c) {
+    public Token lookUpChar(String lexeme){
+    	if (lexeme.length() ==  1){
+    		switch (lexeme.charAt(0)) {
             /* Grammar punctuation */
-            case '(':
-                nextToken = Token.LEFT_PAREN;
-                break;
-            case ')':
-                nextToken = Token.RIGHT_PAREN;
-                break;
-            case ';':
-                nextToken = Token.SEMI_COLON;
-                break;
+            	case '(':
+                	return Token.LEFT_PAREN;
+            	case ')':
+                	return Token.RIGHT_PAREN;
+            	case ';':
+                	return Token.SEMI_COLON;
             /* Relational Operators */
-            case '>': // Handle >=
-                if (input.charAt(position + 1) == '=') {
-                    position++;
-                }
-            case '<': // Handle <=
-                if (input.charAt(position + 1) == '=') {
-                    position++;
-                }
-                nextToken = Token.RELATIONAL_OP;
-                break;
-            case '!': // Handle !=
-                if (input.charAt(position + 1) == '=') {
-                    position++;
-                }
-                else {
-                    nextToken = Token.PREPOST_OP;
-                    break;
-                }
-            case '=': // Handle ==
-                if (input.charAt(position + 1) == '=') {
-                    position++;
-                    nextToken = Token.RELATIONAL_OP;
-                    break;
-                }
-                else {
-                    nextToken = Token.ASSIGN_OP;
-                    break;
-                }
-                /* Logical Operators */
-            case '|': // Handle ||
-                if (input.charAt(position + 1) == '|'){
-                    position++;
-                }
-            case '&': // Handle &&
-                if (input.charAt(position + 1) == '&'){
-                    position++;
-                }
-                nextToken = Token.LOGIC_OP;
-                break;
+            	case '>': // Handle >=
+            		return Token.RELATIONAL_OP;
+            	case '<': // Handle <=
+                	return Token.RELATIONAL_OP;
+            	case '!': // Handle !=
+                    return Token.PREPOST_OP;
+            	case '=': // Handle ==
+                    return Token.ASSIGN_OP;
+            /* Logical Operators */
+            	case '|': // Handle ||
+            		return Token.LOGIC_OP;
+            	case '&': // Handle &&
+                	return Token.LOGIC_OP;
             /* Infix Operators */
-            case '+': // Handle ++
-                if (input.charAt(position + 1) == '+'){
-                    position++;
-                    nextToken = Token.PREPOST_OP;
-                    break;
-                }
-            case '-': // Handle --
-                if (input.charAt(position + 1) == '-'){
-                    position++;
-                    nextToken = Token.PREPOST_OP;
-                    break;
-                }
-            case '*':
-            case '/':
-            case '%':
-                nextToken = Token.INFIX_OP;
-                break;
-            default:
-                nextToken = Token.UNVALID_TOKEN;
-        }
+            	case '+': // Handle ++
+                	return Token.INFIX_OP;
+            	case '-': // Handle --
+                	return Token.INFIX_OP;
+            	case '*':
+            		return Token.INFIX_OP;
+            	case '/':
+            		return Token.INFIX_OP;
+            	case '%':
+                	return Token.INFIX_OP;
+            	default:
+            		return Token.INVALID_TOKEN;
+    		}
+    	} 
+    	else if (lexeme.length() == 2){
+    		if (lexeme.equals("==") || lexeme.equals("!=") ||
+    				lexeme.equals("&&") || lexeme.equals("||")){
+    			return Token.LOGIC_OP;
+    		}
+    		else if (lexeme.equals("<=") || lexeme.equals("<=")){
+    			return Token.RELATIONAL_OP;
+    		}
+    		else if (lexeme.equals("++") || lexeme.equals("--")){
+    			return Token.PREPOST_OP;
+    		}
+    		else {
+    			return Token.INVALID_TOKEN;
+    		}
+    	}
+    	else {
+    		return Token.INVALID_TOKEN;
+    	}
     }
 
-
-
-    public void advance() {
-        while (input.charAt(position) == ' '){
-            position++;
-        }
+    public boolean isAtEnd(){
+        return (position > input.length() - 1);
+  //  	return (getRemainingLength() <= 0);
     }
+    
+ //   public int getRemainingLength(){
+//    	return input.length() - position;
+ //   }
+    
+    public boolean isOperator(String s){
+    	return lookUpChar(s) != Token.INVALID_TOKEN;
+    }
+    
+    private void advance(){
+    	if (!isAtEnd()){
+    		position++;
+    	}
+    }
+    
+    private void getNonBlank(){
+    	while (!(isAtEnd()) && (input.substring(position, position +1).matches(WHITESPACE_PATTERN))){
+    		advance();
+    	}
+    }
+
+    public void getLexeme() {
+    	//System.out.print("getLexeme");
+    	getNonBlank();
+    if((position +1)< input.length()){
+    	if ((!(isAtEnd()) && input.substring(position, position +1).matches(LETTER_PATTERN)) || ("" + input.charAt(position)).matches(LETTER_PATTERN)){
+    		lexeme += input.charAt(position);
+    		advance();
+//System.out.println("NAME");
+    		lexemeClass = LexemeClass.NAME;
+
+    		while ((!(isAtEnd()) && input.substring(position, position + 1).matches(NAME_PATTERN)) || ("" + input.charAt(position)).matches(NAME_PATTERN)){
+    			lexeme += input.charAt(position);
+    			advance();
+    		}
+    	} else if ((!(isAtEnd()) && input.substring(position, position + 1).matches(NUM_PATTERN)|| ("" + input.charAt(position)).matches(NUM_PATTERN))){
+    		lexeme += input.charAt(position);
+    		advance();
+//System.out.print("NUMPATTERN");
+    		lexemeClass = LexemeClass.NUMBER;
+    		while ((!(isAtEnd()) && input.substring(position, position + 1).matches(NUM_PATTERN))|| ("" + input.charAt(position)).matches(NUM_PATTERN)){
+    			lexeme += input.charAt(position);
+    			advance();
+    		}
+    	} else if (!(isAtEnd()) && !(input.substring(position, position + 1).matches(WHITESPACE_PATTERN))){
+    		if (!(isAtEnd()) && lookUpChar(input.substring(position, position + 1)) != Token.INVALID_TOKEN){
+    			lexeme += input.charAt(position);
+    			advance();
+//System.out.print("WhiteSpace");
+    			lexemeClass = LexemeClass.SPECIAL;
+    			if (lookUpChar(lexeme + input.charAt(position)) != Token.INVALID_TOKEN){
+    				lexeme += input.charAt(position);
+    				advance();
+    			}
+    		}
+    		else {
+    			//System.out.println("Invalid token");
+    			lexeme += input.charAt(position);
+        		lexemeClass = LexemeClass.SPECIAL;
+        		advance();
+    		}
+    	}
+    	else {
+    		//System.out.println("Invalid token");
+    		lexemeClass = LexemeClass.SPECIAL;
+    		advance();
+    	}
+    }else{
+    	// IF LETTER
+    	if (("" + input.charAt(position)).matches(LETTER_PATTERN)){
+    		lexemeClass = LexemeClass.NAME;
+    	}
+    	else if (("" + input.charAt(position)).matches(NUM_PATTERN)){
+    		lexemeClass = LexemeClass.NUMBER;
+    	}
+    	else if (!("" + input.charAt(position)).matches(WHITESPACE_PATTERN)){
+    		lexemeClass = LexemeClass.SPECIAL;
+    	}
+    	else {
+    		lexemeClass = LexemeClass.SPECIAL;
+    		//System.out.println("Error");
+    	}
+    	
+    	lexeme = "" + input.charAt(position);
+    	advance();
+    	// IF NUMBER
+    	// IF SPECIAL
+    	// OTHERWISE
+    }
+    }
+
 }
