@@ -3,16 +3,58 @@
  */
 public class Parser {
 
-    private Lexer.Token nextToken;  // holds the current token
-    private Lexer lexer;            // holds the Lexer object
+    private Lexer.Token nextToken;  // holds the next token
+    private Lexer lxr;        // holds the Lexer object
 
     public Parser(String input){
-        lexer = new Lexer(input);
+        lxr = new Lexer(input);
     }
 
     // Entry point for recusive parsing
     public void parse(){
         System.out.println("Beginning parse.");
+
+        //for keyword
+        nextToken = lxr.lex();
+        if (nextToken == Lexer.Token.FOR_KEYWORD){
+            // (
+            nextToken = lxr.lex();
+            if (nextToken == Lexer.Token.LEFT_PAREN){
+                nextToken = lxr.lex();
+
+                // <VarInit>!
+                varInit();
+                // ;
+                if (nextToken == Lexer.Token.SEMI_COLON){
+                    nextToken = lxr.lex();
+                    // [<Condition>]
+                    condition();
+                    // ;
+                    if (nextToken == Lexer.Token.SEMI_COLON){
+                        nextToken = lxr.lex();
+                        // [<Expr>]
+                        expr();
+                        // )
+                        if (nextToken == Lexer.Token.RIGHT_PAREN){
+
+                        } else {
+                            error();
+                        }
+                    } else {
+                        error();
+                    }
+
+                } else {
+                    error();
+                }
+
+            } else {
+                error();
+            }
+        } else {
+            error();
+        }
+        System.out.println("Finished parse.");
     }
 
     public void varInit(){
@@ -56,5 +98,9 @@ public class Parser {
         System.out.println("Enter <Term>");
 
         System.out.println("Exit <Term>");
+    }
+
+    public void error(){
+        System.out.printf("ERROR: Invalid token: %s", nextToken.name());
     }
 }

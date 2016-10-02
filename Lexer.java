@@ -4,17 +4,17 @@
 
 public class Lexer {
 
-    String input;      			// Holds the input string
-    String lexeme;     			// Holds the current lexeme
-    int position;     			// Holds the current index position of the analyzer
-    Token nextToken;   			// Holds the value of the output token
-    LexemeClass lexemeClass;	// Holds the classification of the lexeme
+    private String input;      			// Holds the input string
+    private String lexeme;     			// Holds the current lexeme
+    private int position;     			// Holds the current index position of the analyzer
+    private Token nextToken;   			// Holds the value of the output token
+    private LexemeClass lexemeClass;	// Holds the classification of the lexeme
 
 	// regex patterns for checking names and numbers
-    static final String NAME_PATTERN = "(\\w*)";
-    static final String NUM_PATTERN = "(\\d*)";
-    static final String LETTER_PATTERN = "(\\A[a-zA-z])";
-    static final String WHITESPACE_PATTERN = "(\\s)";
+    private static final String NAME_PATTERN = "(\\w*)";
+    private static final String NUM_PATTERN = "(\\d*)";
+    private static final String LETTER_PATTERN = "(\\A[a-zA-z])";
+	private static final String WHITESPACE_PATTERN = "(\\s)";
 
 
     // Token Codes
@@ -42,7 +42,7 @@ public class Lexer {
         TYPE
     }
     
-    public enum LexemeClass {
+    private enum LexemeClass {
     	NAME,
     	NUMBER,
     	SPECIAL,
@@ -91,7 +91,7 @@ public class Lexer {
         return nextToken;
     }
 
-    public Token lookUpChar(String lexeme){
+    private Token lookUpChar(String lexeme){
     	if (lexeme.length() ==  1){
     		switch (lexeme.charAt(0)) {
             /* Grammar punctuation */
@@ -152,17 +152,17 @@ public class Lexer {
 
     public boolean isAtEnd(){
         return (position > input.length() - 1);
-  //  	return (getRemainingLength() <= 0);
     }
-    
- //   public int getRemainingLength(){
-//    	return input.length() - position;
- //   }
-    
+
+	/*
+    private int getRemainingLength(){
+    	return input.length() - position;
+    }
+
     public boolean isOperator(String s){
     	return lookUpChar(s) != Token.INVALID_TOKEN;
     }
-    
+    */
     private void advance(){
     	if (!isAtEnd()){
     		position++;
@@ -175,7 +175,7 @@ public class Lexer {
     	}
     }
 
-    public void getLexeme() {
+    private void getLexeme() {
     	//System.out.print("getLexeme");
     	getNonBlank();
     if((position +1)< input.length()){
