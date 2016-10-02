@@ -1,12 +1,11 @@
 /**
- * Created by markbeussink on 9/30/16.
+ * Created by markbeussink && Cameron Niccum 9/30/16.
  */
 
 import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        //String forLoop = "for (int i = 0; (i < count; i++)";
         String input;
         char c;
         Scanner scanner = new Scanner(System.in);

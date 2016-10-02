@@ -1,5 +1,5 @@
 /**
- * Created by markbeussink on 9/30/16.
+ * Created by markbeussink && Cameron Niccum 9/30/16.
  */
 
 public class Lexer {
@@ -81,13 +81,11 @@ public class Lexer {
     		nextToken = Token.VALUE;
     		break;
     	case SPECIAL:
-    		//System.out.println("error");
     		nextToken = lookUpChar(lexeme);
     		break;
     	}
     	System.out.printf("Lexeme is: %s, token is: %s, remaining length: %d\n",
 				lexeme, nextToken.name(), (input.length() - position));
-    	//System.out.println(input.length() - position);
         return nextToken;
     }
 
@@ -154,15 +152,6 @@ public class Lexer {
         return (position > input.length() - 1);
     }
 
-	/*
-    private int getRemainingLength(){
-    	return input.length() - position;
-    }
-
-    public boolean isOperator(String s){
-    	return lookUpChar(s) != Token.INVALID_TOKEN;
-    }
-    */
     private void advance(){
     	if (!isAtEnd()){
     		position++;
@@ -176,13 +165,13 @@ public class Lexer {
     }
 
     private void getLexeme() {
-    	//System.out.print("getLexeme");
+    	
     	getNonBlank();
     if((position +1)< input.length()){
+    	//Checks for Letter/Number/Whitespace/Invalid_Token
     	if (input.substring(position, position +1).matches(LETTER_PATTERN)){
     		lexeme += input.charAt(position);
     		advance();
-//System.out.println("NAME");
     		lexemeClass = LexemeClass.NAME;
 
     		while (input.substring(position, position + 1).matches(NAME_PATTERN)){
@@ -192,7 +181,6 @@ public class Lexer {
     	} else if (input.substring(position, position + 1).matches(NUM_PATTERN)){
     		lexeme += input.charAt(position);
     		advance();
-//System.out.print("NUMPATTERN");
     		lexemeClass = LexemeClass.NUMBER;
     		while (input.substring(position, position + 1).matches(NUM_PATTERN)){
     			lexeme += input.charAt(position);
@@ -202,7 +190,6 @@ public class Lexer {
     		if (!(isAtEnd()) && lookUpChar(input.substring(position, position + 1)) != Token.INVALID_TOKEN){
     			lexeme += input.charAt(position);
     			advance();
-//System.out.print("WhiteSpace");
     			lexemeClass = LexemeClass.SPECIAL;
     			if (lookUpChar(lexeme + input.charAt(position)) != Token.INVALID_TOKEN){
     				lexeme += input.charAt(position);
@@ -210,14 +197,12 @@ public class Lexer {
     			}
     		}
     		else {
-    			//System.out.println("Invalid token");
     			lexeme += input.charAt(position);
         		lexemeClass = LexemeClass.SPECIAL;
         		advance();
     		}
     	}
     	else {
-    		//System.out.println("Invalid token");
     		lexemeClass = LexemeClass.SPECIAL;
     		advance();
     	}
@@ -234,14 +219,10 @@ public class Lexer {
     	}
     	else {
     		lexemeClass = LexemeClass.SPECIAL;
-    		//System.out.println("Error");
     	}
     	
     	lexeme = "" + input.charAt(position);
     	advance();
-    	// IF NUMBER
-    	// IF SPECIAL
-    	// OTHERWISE
     }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Created by markbeussink on 9/30/16.
+ * Created by markbeussink && Cameron Niccum 9/30/16.
  */
 public class Parser {
 
