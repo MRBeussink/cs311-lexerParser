@@ -73,6 +73,9 @@ public class Lexer {
     		else if (lexeme.equalsIgnoreCase("for")){
     			nextToken= Token.FOR_KEYWORD;
     		}
+			else if (lexeme.equals("int") || lexeme.equals("long") || lexeme.equals("short") || lexeme.equals("byte")){
+				nextToken = Token.TYPE;
+			}
     		else {
     			nextToken = Token.ID;
     		}
@@ -85,7 +88,8 @@ public class Lexer {
     		nextToken = lookUpChar(lexeme);
     		break;
     	}
-    	System.out.printf("Lexeme is: %s, token is: %s, remaining length: %d\n", lexeme, nextToken.name(), (input.length() - position));
+    	System.out.printf("Lexeme is: %s, token is: %s, remaining length: %d\n",
+				lexeme, nextToken.name(), (input.length() - position));
     	//System.out.println(input.length() - position);
         return nextToken;
     }
@@ -178,26 +182,26 @@ public class Lexer {
     	//System.out.print("getLexeme");
     	getNonBlank();
     if((position +1)< input.length()){
-    	if ((!(isAtEnd()) && input.substring(position, position +1).matches(LETTER_PATTERN)) || ("" + input.charAt(position)).matches(LETTER_PATTERN)){
+    	if (input.substring(position, position +1).matches(LETTER_PATTERN)){
     		lexeme += input.charAt(position);
     		advance();
 //System.out.println("NAME");
     		lexemeClass = LexemeClass.NAME;
 
-    		while ((!(isAtEnd()) && input.substring(position, position + 1).matches(NAME_PATTERN)) || ("" + input.charAt(position)).matches(NAME_PATTERN)){
+    		while (input.substring(position, position + 1).matches(NAME_PATTERN)){
     			lexeme += input.charAt(position);
     			advance();
     		}
-    	} else if ((!(isAtEnd()) && input.substring(position, position + 1).matches(NUM_PATTERN)|| ("" + input.charAt(position)).matches(NUM_PATTERN))){
+    	} else if (input.substring(position, position + 1).matches(NUM_PATTERN)){
     		lexeme += input.charAt(position);
     		advance();
 //System.out.print("NUMPATTERN");
     		lexemeClass = LexemeClass.NUMBER;
-    		while ((!(isAtEnd()) && input.substring(position, position + 1).matches(NUM_PATTERN))|| ("" + input.charAt(position)).matches(NUM_PATTERN)){
+    		while (input.substring(position, position + 1).matches(NUM_PATTERN)){
     			lexeme += input.charAt(position);
     			advance();
     		}
-    	} else if (!(isAtEnd()) && !(input.substring(position, position + 1).matches(WHITESPACE_PATTERN))){
+    	} else if (!(input.substring(position, position + 1).matches(WHITESPACE_PATTERN))){
     		if (!(isAtEnd()) && lookUpChar(input.substring(position, position + 1)) != Token.INVALID_TOKEN){
     			lexeme += input.charAt(position);
     			advance();
