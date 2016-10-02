@@ -60,6 +60,53 @@ public class Parser {
     public void varInit(){
         System.out.println("Enter <VarInit>");
 
+        // [Type] id = value
+        if (nextToken == Lexer.Token.TYPE) {
+            nextToken = lxr.lex();
+
+            // id
+            if (nextToken == Lexer.Token.ID){
+                nextToken = lxr.lex();
+
+                // =
+                if (nextToken == Lexer.Token.ASSIGN_OP){
+                    nextToken = lxr.lex();
+
+                    // value
+                    if (nextToken == Lexer.Token.VALUE){
+                        nextToken = lxr.lex();
+                    } else {
+                        error();
+                    }
+                } else {
+                    error();
+                }
+            } else {
+                error();
+            }
+        }
+
+        // id = value
+        else if(nextToken == Lexer.Token.ID) {
+            nextToken = lxr.lex();
+
+            // =
+            if (nextToken == Lexer.Token.ASSIGN_OP){
+                nextToken = lxr.lex();
+
+                // value
+                if (nextToken == Lexer.Token.VALUE){
+                    nextToken = lxr.lex();
+                } else {
+                    error();
+                }
+            } else {
+                error();
+            }
+        }
+        else {
+            error();
+        }
         System.out.println("Exit <VarInit>");
     }
 
