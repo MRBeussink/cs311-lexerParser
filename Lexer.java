@@ -4,16 +4,13 @@
 
 public class Lexer {
 
-    String input;      // Holds the input string
-    String lexeme;     // Holds the current lexeme
-    int position;      // Holds the current index position of the analyzer
-    Token token;       // Holds the current token
-    Token nextToken;   // Holds the
-    LexemeClass lexemeClass;
-    
-    
+    String input;      			// Holds the input string
+    String lexeme;     			// Holds the current lexeme
+    int position;     			// Holds the current index position of the analyzer
+    Token nextToken;   			// Holds the value of the output token
+    LexemeClass lexemeClass;	// Holds the classification of the lexeme
 
-
+	// regex patterns for checking names and numbers
     static final String NAME_PATTERN = "(\\w*)";
     static final String NUM_PATTERN = "(\\d*)";
     static final String LETTER_PATTERN = "(\\A[a-zA-z])";
