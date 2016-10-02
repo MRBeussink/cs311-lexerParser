@@ -13,7 +13,7 @@ public class Main {
         do {
             input = "";
             System.out.println("Enter a for loop header.");
-            System.out.println("i.e \"for (int i = 0; (i < count; i++)\"");
+            System.out.println("i.e \"for (int i = 0; i < count ; i++)\"");
             input = scanner.nextLine();
 
             Parser prsr = new Parser(input);
